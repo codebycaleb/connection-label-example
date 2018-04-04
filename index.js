@@ -7,9 +7,11 @@ const App = {
 
   authentication: {
     type: 'custom',
-    connectionLabel: (z, bundle) => {
-      return bundle.inputData.username;
-    },
+//    An alternative way:
+//    connectionLabel: (z, bundle) => {
+//      return bundle.inputData.username;
+//    },
+    connectionLabel: '{{username}}',
     test: (z, bundle) => {
       return z.request({
         url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
