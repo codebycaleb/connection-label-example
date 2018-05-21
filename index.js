@@ -7,24 +7,46 @@ const App = {
 
   authentication: {
     type: 'custom',
-//    An alternative way:
-//    connectionLabel: (z, bundle) => {
-//      return bundle.inputData.username;
-//    },
-    connectionLabel: '{{username}}',
-    test: (z, bundle) => {
-      return z.request({
-        url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
-      }).then((response) => {return response.json.args});
-    },
     fields: [
       {
         key: 'user_name',
         label: 'User name',
         required: true,
         type: 'string'
-      }
-    ]
+      },
+      { key: 'password', label: 'Password', required: true, type: 'string' }
+    ],
+    
+    // Version A: test method returns response.content
+    test: (z, bundle) => {
+      return z.request({
+        url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
+      }).then((response) => {return response.json.args});
+    },
+    connectionLabel: '{{username}}'
+    // alternatively: connectionLabel: '{{bundle.inputData.username}}'
+    
+    // Version B: test method returns response
+    test: (z, bundle) => {
+      return z.request({
+        url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
+      }).then((response) => {return response});
+    },
+    connectionLabel: '{{bundle.inputData.json.args.username}}'
+    
+    // Version C: test method returns custom response
+    test: (z, bundle) => {
+      return z.request({
+        url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
+      }).then((response) => {return {username: response.json.args.username});
+    }
+    connectionLabel: '{{username}}'
+    // yet another alternative applicable to the above options:
+    /* 
+     * connectionLabel: (z, bundle) => {
+     *   return bundle.inputData.username;
+     * }, 
+     */
   },
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
