@@ -8,22 +8,27 @@ const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
 
-  it('test response should contain username and connectionLabel should be updated', (done) => {
+  it('should have env variables', () => {
+    zapier.tools.env.inject();
+    console.log(process.env.BATMAN);
+  });
+
+  it('should contain username and connectionLabel should be updated', async () => {
     const bundle = {
       authData: {
         user_name: 'secret'
       }
     };
-    appTester(App.authentication.test, bundle)
+    await appTester(App.authentication.test, bundle)
       .then((response) => {
         response.username.should.eql('secret');
-        done();
+        Object.assign(bundle.inputData, response);
       })
       .catch((e) => console.log(e));
-    appTester(App.authentication.connectionLabel, bundle)
+    await appTester(App.authentication.connectionLabel, bundle)
       .then((label) => {
+        console.log(label)
         label.should.eql('secret');
-        done();
       })
       .catch((e) => console.log(e));
   });

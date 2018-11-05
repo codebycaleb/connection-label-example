@@ -11,6 +11,7 @@ const App = {
       {
         key: 'user_name',
         label: 'User name',
+        helpText: '{{process.env.HELP_TEXT}}',
         required: true,
         type: 'string'
       },
@@ -21,26 +22,27 @@ const App = {
     test: (z, bundle) => {
       return z.request({
         url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
-      }).then((response) => {return response.json.args});
+      }).then((response) => response.json.args);
     },
-    connectionLabel: '{{username}}'
+    connectionLabel: '{{username}}',
     // alternatively: connectionLabel: '{{bundle.inputData.username}}'
     
     // Version B: test method returns response
     test: (z, bundle) => {
       return z.request({
         url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
-      }).then((response) => {return response});
+      }).then((response) => response);
     },
-    connectionLabel: '{{bundle.inputData.json.args.username}}'
+    connectionLabel: '{{bundle.inputData.json.args.username}}',
     
     // Version C: test method returns custom response
     test: (z, bundle) => {
       return z.request({
         url: 'http://httpbin.org/get?username={{bundle.authData.user_name}}'
-      }).then((response) => {return {username: response.json.args.username});
-    }
-    connectionLabel: '{{username}}'
+      }).then((response) => ({username: response.json.args.username}));
+    },
+    connectionLabel: '{{username}}',
+    connectionLabel: (z, bundle) => bundle.inputData.username,
     // yet another alternative applicable to the above options:
     /* 
      * connectionLabel: (z, bundle) => {
